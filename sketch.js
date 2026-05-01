@@ -60,14 +60,16 @@ const leverSketch = (p) => {
     // Big box: 100x100, mass = 4
     boxBig = Bodies.rectangle(250, 220, 100, 100, { 
       render: { fillStyle: '#f97316' },
-      friction: 0.8
+      friction: 0.8,
+      collisionFilter: { category: 0x0002 }
     });
     Body.setMass(boxBig, 4);
 
     // Small box: 50x50, mass = 1
     boxSmall = Bodies.rectangle(750, 240, 50, 50, { 
       render: { fillStyle: '#f97316' },
-      friction: 0.8
+      friction: 0.8,
+      collisionFilter: { category: 0x0002 }
     });
     Body.setMass(boxSmall, 1);
 
@@ -75,13 +77,12 @@ const leverSketch = (p) => {
 
     // Mouse interaction
     let canvasMouse = Mouse.create(canvas.elt);
-    canvasMouse.pixelRatio = p.pixelDensity();
-    
-    // Disable Matter.js default mouse listeners due to Reveal.js CSS scaling issues
-    Mouse.clearSourceEvents(canvasMouse);
+    // Explicitly set pixelRatio to 1 so Matter.js doesn't double-divide coordinates on Retina screens
+    canvasMouse.pixelRatio = 1; 
     
     mConstraint = MouseConstraint.create(engine, {
       mouse: canvasMouse,
+      collisionFilter: { mask: 0x0002 }, // Only drag bodies with category 0x0002
       constraint: {
         stiffness: 0.2,
         render: { visible: false }
@@ -89,27 +90,10 @@ const leverSketch = (p) => {
     });
     Composite.add(world, mConstraint);
 
-    // Use p5.js mouse events which correctly handle CSS scaling
-    p.mousePressed = () => {
-      if (p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height) {
-        canvasMouse.button = 0;
-      }
-    };
-    p.mouseReleased = () => {
-      canvasMouse.button = -1;
-    };
-
     Runner.run(Runner.create(), engine);
   };
 
   p.draw = () => {
-    // Update mouse position continuously
-    if (mConstraint) {
-      mConstraint.mouse.position.x = p.mouseX;
-      mConstraint.mouse.position.y = p.mouseY;
-      mConstraint.mouse.absolute.x = p.mouseX;
-      mConstraint.mouse.absolute.y = p.mouseY;
-    }
 
     p.background('#f8fafc');
     p.noStroke();
@@ -171,29 +155,18 @@ const scaleSketch = (p) => {
 
     // Mouse interaction
     let canvasMouse = Mouse.create(canvas.elt);
-    canvasMouse.pixelRatio = p.pixelDensity();
-    
-    // Disable Matter.js default mouse listeners due to Reveal.js CSS scaling issues
-    Mouse.clearSourceEvents(canvasMouse);
+    // Explicitly set pixelRatio to 1
+    canvasMouse.pixelRatio = 1;
     
     mConstraint = MouseConstraint.create(engine, {
       mouse: canvasMouse,
+      collisionFilter: { mask: 0x0002 },
       constraint: {
         stiffness: 0.2,
         render: { visible: false }
       }
     });
     Composite.add(world, mConstraint);
-
-    // Use p5.js mouse events which correctly handle CSS scaling
-    p.mousePressed = () => {
-      if (p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height) {
-        canvasMouse.button = 0;
-      }
-    };
-    p.mouseReleased = () => {
-      canvasMouse.button = -1;
-    };
 
     Runner.run(Runner.create(), engine);
 
@@ -230,26 +203,24 @@ const scaleSketch = (p) => {
     // Cut at x = 120.
     // Thick part: trapezoid.
     let thickVerts = Vertices.create([{x:0, y:-60}, {x:120, y:-40}, {x:120, y:40}, {x:0, y:60}]);
-    thickPart = Bodies.fromVertices(200, 150, thickVerts, { friction: 0.8 });
+    thickPart = Bodies.fromVertices(200, 150, thickVerts, { 
+      friction: 0.8,
+      collisionFilter: { category: 0x0002 }
+    });
     Body.setMass(thickPart, 5); // Proportional to 5/9
     
     // Thin part: triangle.
     let thinVerts = Vertices.create([{x:0, y:-40}, {x:240, y:0}, {x:0, y:40}]);
-    thinPart = Bodies.fromVertices(700, 150, thinVerts, { friction: 0.8 });
+    thinPart = Bodies.fromVertices(700, 150, thinVerts, { 
+      friction: 0.8,
+      collisionFilter: { category: 0x0002 }
+    });
     Body.setMass(thinPart, 4); // Proportional to 4/9
 
     Composite.add(world, [ground, scalePlatform, thickPart, thinPart]);
   }
 
   p.draw = () => {
-    // Update mouse position continuously
-    if (mConstraint) {
-      mConstraint.mouse.position.x = p.mouseX;
-      mConstraint.mouse.position.y = p.mouseY;
-      mConstraint.mouse.absolute.x = p.mouseX;
-      mConstraint.mouse.absolute.y = p.mouseY;
-    }
-
     p.background('#f8fafc');
     p.noStroke();
 
