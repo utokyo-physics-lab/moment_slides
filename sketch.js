@@ -76,6 +76,10 @@ const leverSketch = (p) => {
     // Mouse interaction
     let canvasMouse = Mouse.create(canvas.elt);
     canvasMouse.pixelRatio = p.pixelDensity();
+    
+    // Disable Matter.js default mouse listeners due to Reveal.js CSS scaling issues
+    Mouse.clearSourceEvents(canvasMouse);
+    
     mConstraint = MouseConstraint.create(engine, {
       mouse: canvasMouse,
       constraint: {
@@ -85,10 +89,28 @@ const leverSketch = (p) => {
     });
     Composite.add(world, mConstraint);
 
+    // Use p5.js mouse events which correctly handle CSS scaling
+    p.mousePressed = () => {
+      if (p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height) {
+        canvasMouse.button = 0;
+      }
+    };
+    p.mouseReleased = () => {
+      canvasMouse.button = -1;
+    };
+
     Runner.run(Runner.create(), engine);
   };
 
   p.draw = () => {
+    // Update mouse position continuously
+    if (mConstraint) {
+      mConstraint.mouse.position.x = p.mouseX;
+      mConstraint.mouse.position.y = p.mouseY;
+      mConstraint.mouse.absolute.x = p.mouseX;
+      mConstraint.mouse.absolute.y = p.mouseY;
+    }
+
     p.background('#f8fafc');
     p.noStroke();
 
@@ -150,6 +172,10 @@ const scaleSketch = (p) => {
     // Mouse interaction
     let canvasMouse = Mouse.create(canvas.elt);
     canvasMouse.pixelRatio = p.pixelDensity();
+    
+    // Disable Matter.js default mouse listeners due to Reveal.js CSS scaling issues
+    Mouse.clearSourceEvents(canvasMouse);
+    
     mConstraint = MouseConstraint.create(engine, {
       mouse: canvasMouse,
       constraint: {
@@ -158,6 +184,16 @@ const scaleSketch = (p) => {
       }
     });
     Composite.add(world, mConstraint);
+
+    // Use p5.js mouse events which correctly handle CSS scaling
+    p.mousePressed = () => {
+      if (p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height) {
+        canvasMouse.button = 0;
+      }
+    };
+    p.mouseReleased = () => {
+      canvasMouse.button = -1;
+    };
 
     Runner.run(Runner.create(), engine);
 
@@ -206,6 +242,14 @@ const scaleSketch = (p) => {
   }
 
   p.draw = () => {
+    // Update mouse position continuously
+    if (mConstraint) {
+      mConstraint.mouse.position.x = p.mouseX;
+      mConstraint.mouse.position.y = p.mouseY;
+      mConstraint.mouse.absolute.x = p.mouseX;
+      mConstraint.mouse.absolute.y = p.mouseY;
+    }
+
     p.background('#f8fafc');
     p.noStroke();
 

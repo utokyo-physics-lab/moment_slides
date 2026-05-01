@@ -15,9 +15,6 @@ body {
 }
 
 /* Fix Tailwind conflict with Reveal */
-.reveal section {
-  top: 0 !important;
-}
 .reveal .slides {
   text-align: center;
 }
