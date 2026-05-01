@@ -1,0 +1,30 @@
+/* Minimal CSS for Reveal.js + Tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap');
+
+body {
+  font-family: 'Zen Maru Gothic', sans-serif !important;
+}
+
+.reveal {
+  font-family: 'Zen Maru Gothic', sans-serif;
+}
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  text-transform: none;
+}
+
+/* Fix Tailwind conflict with Reveal */
+.reveal section {
+  top: 0 !important;
+}
+.reveal .slides {
+  text-align: center;
+}
+
+/* Canvas styling */
+canvas {
+  display: block;
+  border-radius: 12px;
+  max-width: 100%;
+}
